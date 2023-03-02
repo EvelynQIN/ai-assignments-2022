@@ -51,8 +51,6 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
     """
 
-    # TODO: Implement this function.
-    # Hint: Use nn.Sequential to stack multiple layers of the network.
     layers = []
 
     for l in range(len(sizes) - 1):
@@ -236,7 +234,7 @@ class VPGBuffer:
         # buffer has to have room so you can store
         assert self.ptr < self.max_size
 
-        # TODO: Store new data in the respective buffers.
+        # Store new data in the respective buffers.
         self.obs_buf[self.ptr] = obs
         self.act_buf[self.ptr] = act
         self.rew_buf[self.ptr] = rew
@@ -274,13 +272,13 @@ class VPGBuffer:
             np.cumsum(self.rew_buf[self.ptr:self.path_start_idx][::-1])[::-1]
         )
 
-        # TODO: Implement TD residuals calculation.
-        # Hint: use the discount_cumsum function 
+        # Implement TD residuals calculation.
+        # use the discount_cumsum function 
         delta_t = rews[:-1] + self.gamma * vals[1:] - vals[:-1]
         self.tdres_buf[path_slice] = discount_cumsum(delta_t, self.gamma * self.lam) # estimation of the advantage function
 
-        # TODO: Implement discounted rewards-to-go calculation. 
-        # Hint: use the discount_cumsum function 
+        # Implement discounted rewards-to-go calculation. 
+        # use the discount_cumsum function 
         self.ret_buf[path_slice] = discount_cumsum(rews[:-1], self.gamma)
 
         # Update the path_start_idx
@@ -334,8 +332,8 @@ class Agent:
             The log-probability of the action under the policy output distribution.
         """
         
-        # TODO: Implement this function.
-        # Hint: This function is only called during inference. You should use
+
+        # This function is only called during inference. You should use
         # `torch.no_grad` to ensure that it does not interfer with the gradient computation.
         with torch.no_grad():
             pi = self.actor(state)[0] # get the distribution over the action state
@@ -366,7 +364,6 @@ class Agent:
         You SHOULD NOT change the arguments this function takes and what it outputs!
         """
 
-        # TODO: Implement this function.
         # Currently, this just returns a random action.
         with torch.no_grad():
             pi = self.actor(torch.as_tensor(obs, dtype=torch.float32))[0]
@@ -385,7 +382,7 @@ def train(env, seed=0):
     random.seed(seed)
     np.random.seed(seed)
 
-    # TODO: In this function, you implement the actor and critic updates.
+    # Implement the actor and critic updates.
 
     # The observations are 8 dimensional vectors, and the actions are numbers,
     # i.e. 0-dimensional vectors (hence act_dim is an empty list).
@@ -416,7 +413,7 @@ def train(env, seed=0):
 
     # Initialize the ADAM optimizer using the parameters
     # of the actor and then critic networks
-    # TODO: Use these optimizers later to update the actor and critic networks.
+    # Use these optimizers later to update the actor and critic networks.
     actor_optimizer = Adam(agent.actor.parameters(), lr=actor_lr)
     critic_optimizer = Adam(agent.critic.parameters(), lr=critic_lr)
 
@@ -463,7 +460,7 @@ def train(env, seed=0):
         # the actor and / or critic function.
 
 
-        # TODO: Implement the policy and value function updates. Hint: some of the torch code is
+        # Implement the policy and value function updates. 
         # done for you.
 
         data = buf.get()
@@ -471,7 +468,7 @@ def train(env, seed=0):
         # Do 1 policy gradient update
         actor_optimizer.zero_grad() #reset the gradient in the actor optimizer
 
-        #Hint: you need to compute a 'loss' such that its derivative with respect to the actor
+        # Compute a 'loss' such that its derivative with respect to the actor
         # parameters is the policy gradient. Then call loss.backwards() and actor_optimizer.step()
         num_ep = len(ep_returns)
         logp_new = agent.actor(data['obs'], data['act'])[1] # get the log probability
